@@ -2254,8 +2254,159 @@
             setTimeout(startUrgencySystem, 2000);
         });
 
-       // EmailJS Configuration and Form Handling - VERSIÓN CORREGIDA (function() { // Configuración const EMAIL_CONFIG = { publicKey: 'FSGiWzvR5EUYIbYgU', serviceId: 'service_xt6qvmn', templateId: 'template_v7m4hjc' }; let form, submitBtn, btnText, formMessage; // Inicializar EmailJS function initializeEmailJS() { try { if (typeof emailjs === 'undefined') { console.error('❌ EmailJS no disponible'); return false; } emailjs.init(EMAIL_CONFIG.publicKey); console.log('✅ EmailJS inicializado'); return true; } catch (error) { console.error('❌ Error init EmailJS:', error); return false; } } // Validar formulario function validateForm() { const name = document.getElementById('name').value.trim(); const phone = document.getElementById('phone').value.trim(); const address = document.getElementById('address').value.trim(); if (!name || !phone || !address) { showError('Por favor, completa todos los campos obligatorios.'); return false; } const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/; if (!phoneRegex.test(phone)) { showError('Por favor, ingresa un número de teléfono válido.'); return false; } return true; } // Estados del botón function showLoading() { submitBtn.disabled = true; submitBtn.classList.add('btn-loading'); btnText.textContent = 'Enviando...'; hideMessage(); } function hideLoading() { submitBtn.disabled = false; submitBtn.classList.remove('btn-loading'); btnText.innerHTML = '<i class="fas fa-calendar-check"></i> Reservar mi Cita VIP'; } // Mensajes function showSuccess() { formMessage.className = 'form-message success'; formMessage.innerHTML = ` <i class="fas fa-check-circle"></i> <strong>¡Solicitud enviada exitosamente!</strong><br> Nos pondremos en contacto dentro de 24 horas. `; formMessage.style.display = 'block'; // Mostrar modal setTimeout(() => { const modal = document.getElementById('success-modal'); if (modal) modal.style.display = 'block'; }, 1000); } function showError(message) { formMessage.className = 'form-message error'; formMessage.innerHTML = ` <i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ${message} `; formMessage.style.display = 'block'; } function hideMessage() { formMessage.style.display = 'none'; } // Manejar envío function handleFormSubmit(e) { e.preventDefault(); if (!validateForm()) return; showLoading(); // Datos del formulario const templateParams = { from_name: document.getElementById('name').value.trim(), from_phone: document.getElementById('phone').value.trim(), from_address: document.getElementById('address').value.trim(), hair_type: document.getElementById('hair-type').value || 'No especificado', message: document.getElementById('message').value.trim() || 'Sin mensaje adicional', to_name: 'De Valee', reply_to: 'agenda.valee@gmail.com' }; // Enviar email emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, templateParams) .then(function(response) { console.log('✅ Email enviado:', response); showSuccess(); form.reset(); }) .catch(function(error) { console.error('❌ Error EmailJS:', error); showError('Error al enviar. Inténtalo nuevamente.'); }) .finally(function() { hideLoading(); }); } // Inicializar sistema function initializeFormSystem() { form = document.getElementById('booking-form'); submitBtn = document.getElementById('submit-btn'); btnText = document.getElementById('btn-text'); formMessage = document.getElementById('form-message'); if (!form || !submitBtn || !btnText || !formMessage) { console.error('❌ Elementos del formulario no encontrados'); return; } if (initializeEmailJS()) { form.addEventListener('submit', handleFormSubmit); console.log('🎯 Sistema de formulario listo'); } } // Inicializar cuando esté listo if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function() { setTimeout(initializeFormSystem, 500); }); } else { setTimeout(initializeFormSystem, 500); } })();
-
+// EmailJS Configuration and Form Handling - VERSIÓN CORREGIDA
+(function() {
+    // Configuración
+    const EMAIL_CONFIG = {
+        publicKey: 'FSGiWzvR5EUYIbYgU',
+        serviceId: 'service_xt6qvmn',
+        templateId: 'template_v7m4hjc'
+    };
+    
+    let form, submitBtn, btnText, formMessage;
+    
+    // Inicializar EmailJS
+    function initializeEmailJS() {
+        try {
+            if (typeof emailjs === 'undefined') {
+                console.error('❌ EmailJS no disponible');
+                return false;
+            }
+            emailjs.init(EMAIL_CONFIG.publicKey);
+            console.log('✅ EmailJS inicializado');
+            return true;
+        } catch (error) {
+            console.error('❌ Error init EmailJS:', error);
+            return false;
+        }
+    }
+    
+    // Validar formulario
+    function validateForm() {
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const address = document.getElementById('address').value.trim();
+        
+        if (!name || !phone || !address) {
+            showError('Por favor, completa todos los campos obligatorios.');
+            return false;
+        }
+        
+        const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
+        if (!phoneRegex.test(phone)) {
+            showError('Por favor, ingresa un número de teléfono válido.');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Estados del botón
+    function showLoading() {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-loading');
+        btnText.textContent = 'Enviando...';
+        hideMessage();
+    }
+    
+    function hideLoading() {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn-loading');
+        btnText.innerHTML = '<i class="fas fa-calendar-check"></i> Reservar mi Cita VIP';
+    }
+    
+    // Mensajes
+    function showSuccess() {
+        formMessage.className = 'form-message success';
+        formMessage.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <strong>¡Solicitud enviada exitosamente!</strong><br>
+            Nos pondremos en contacto dentro de 24 horas.
+        `;
+        formMessage.style.display = 'block';
+        
+        // Mostrar modal
+        setTimeout(() => {
+            const modal = document.getElementById('success-modal');
+            if (modal) modal.style.display = 'block';
+        }, 1000);
+    }
+    
+    function showError(message) {
+        formMessage.className = 'form-message error';
+        formMessage.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Error:</strong> ${message}
+        `;
+        formMessage.style.display = 'block';
+    }
+    
+    function hideMessage() {
+        formMessage.style.display = 'none';
+    }
+    
+    // Manejar envío
+    function handleFormSubmit(e) {
+        e.preventDefault();
+        
+        if (!validateForm()) return;
+        
+        showLoading();
+        
+        // Datos del formulario
+        const templateParams = {
+            from_name: document.getElementById('name').value.trim(),
+            from_phone: document.getElementById('phone').value.trim(),
+            from_address: document.getElementById('address').value.trim(),
+            hair_type: document.getElementById('hair-type').value || 'No especificado',
+            message: document.getElementById('message').value.trim() || 'Sin mensaje adicional',
+            to_name: 'De Valee',
+            reply_to: 'agenda.valee@gmail.com'
+        };
+        
+        // Enviar email
+        emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, templateParams)
+            .then(function(response) {
+                console.log('✅ Email enviado:', response);
+                showSuccess();
+                form.reset();
+            })
+            .catch(function(error) {
+                console.error('❌ Error EmailJS:', error);
+                showError('Error al enviar. Inténtalo nuevamente.');
+            })
+            .finally(function() {
+                hideLoading();
+            });
+    }
+    
+    // Inicializar sistema
+    function initializeFormSystem() {
+        form = document.getElementById('booking-form');
+        submitBtn = document.getElementById('submit-btn');
+        btnText = document.getElementById('btn-text');
+        formMessage = document.getElementById('form-message');
+        
+        if (!form || !submitBtn || !btnText || !formMessage) {
+            console.error('❌ Elementos del formulario no encontrados');
+            return;
+        }
+        
+        if (initializeEmailJS()) {
+            form.addEventListener('submit', handleFormSubmit);
+            console.log('🎯 Sistema de formulario listo');
+        }
+    }
+    
+    // Inicializar cuando esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(initializeFormSystem, 500);
+        });
+    } else {
+        setTimeout(initializeFormSystem, 500);
+    }
+})();
         // Testimonial Carousel
         let currentSlide = 0;
         const slides = document.querySelectorAll('.testimonial-slide');
