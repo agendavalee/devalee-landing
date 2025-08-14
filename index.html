@@ -1829,7 +1829,7 @@ Quiero reservar mi cita VIP para el alisado brasileño orgánico.
             window.whatsappBookingLink = whatsappLink;
         });
 
-        // Modal handling
+       // Modal handling
         const modal = document.getElementById('success-modal');
         const closeBtn = document.querySelector('.close');
 
@@ -2115,7 +2115,7 @@ Quiero reservar mi cita VIP para el alisado brasileño orgánico.
             // Lógica simple para determinar el resultado basado en las respuestas
             const hairType = answers[0];
             const timeSpent = answers[1];
-            const previousTreatments = answers[3];
+            const previousTreatments = answers[2];
             const goal = answers[3];
             
             if (hairType === 'afro' || timeSpent === 'muchisimo') {
@@ -2304,57 +2304,33 @@ Quiero reservar mi cita VIP para el alisado brasileño orgánico.
             setTimeout(updateLiveStats, 3000);
         }
 
-       
+        // Start urgency system when page loads
+        window.addEventListener('load', () => {
+            setTimeout(startUrgencySystem, 2000);
+        });
+
+        // EmailJS Configuration and Form Handling - CÓDIGO CORREGIDO
+        (function() {
+            // Initialize EmailJS with your actual credentials
+            const EMAIL_CONFIG = {
+                publicKey: 'FSGiWzvR5EUYIbYgU',
+                serviceId: 'service_xt6qvmn',
+                templateId: 'template_v7m4hjc'
+            };
             
-            const form = document.getElementById('booking-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const btnText = document.getElementById('btn-text');
-            const formMessage = document.getElementById('form-message');
+            let form, submitBtn, btnText, formMessage;
             
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Validate form
-                if (!validateForm()) {
-                    return;
+            // Initialize EmailJS when DOM is ready
+            function initializeEmailJS() {
+                if (typeof emailjs !== 'undefined') {
+                    emailjs.init(EMAIL_CONFIG.publicKey);
+                    console.log('✅ EmailJS inicializado correctamente');
+                    return true;
+                } else {
+                    console.error('❌ EmailJS no se cargó - verificar CDN');
+                    return false;
                 }
-                
-                // Show loading state
-                showLoading();
-                
-                // Prepare template parameters
-                const templateParams = {
-                    from_name: document.getElementById('name').value,
-                    from_phone: document.getElementById('phone').value,
-                    from_address: document.getElementById('address').value,
-                    hair_type: document.getElementById('hair-type').value || 'No especificado',
-                    message: document.getElementById('message').value || 'Sin mensaje adicional',
-                    to_name: 'De Valee',
-                    reply_to: 'agenda.valee@gmail.com'
-                };
-                
-                // Send email via EmailJS with your credentials
-                emailjs.send('service_xt6qvmn', 'template_v7m4hjc', templateParams)
-                    .then(function(response) {
-                        console.log('SUCCESS!', response.status, response.text);
-                        showSuccess();
-                        form.reset();
-                        
-                        // Optional: Redirect to WhatsApp with pre-filled message
-                        setTimeout(() => {
-                            const whatsappMessage = createWhatsAppMessage(templateParams);
-                            const whatsappURL = `https://wa.me/573127600023?text=${encodeURIComponent(whatsappMessage)}`;
-                            window.open(whatsappURL, '_blank');
-                        }, 2000);
-                        
-                    }, function(error) {
-                        console.log('FAILED...', error);
-                        showError('Hubo un error al enviar tu solicitud. Por favor, intenta nuevamente o contáctanos por WhatsApp.');
-                    })
-                    .finally(function() {
-                        hideLoading();
-                    });
-            });
+            }
             
             function validateForm() {
                 const name = document.getElementById('name').value.trim();
@@ -2397,6 +2373,14 @@ Quiero reservar mi cita VIP para el alisado brasileño orgánico.
                     Dentro de las próximas 24 horas nos pondremos en contacto contigo para coordinar tu cita VIP.
                 `;
                 formMessage.style.display = 'block';
+                
+                // Mostrar modal después de un breve delay
+                setTimeout(() => {
+                    const modal = document.getElementById('success-modal');
+                    if (modal) {
+                        modal.style.display = 'block';
+                    }
+                }, 1000);
             }
             
             function showError(message) {
@@ -2425,6 +2409,110 @@ Acabo de completar el formulario en su página web y quiero reservar mi cita VIP
 
 ¡Espero su contacto para coordinar la fecha y hora! ✨`;
             }
+            
+            function handleFormSubmit(e) {
+                e.preventDefault();
+                
+                console.log('📧 Iniciando envío del formulario...');
+                
+                // Verify EmailJS is available
+                if (typeof emailjs === 'undefined') {
+                    showError('Error del sistema. Por favor, recarga la página e intenta nuevamente.');
+                    return;
+                }
+                
+                // Validate form
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Show loading state
+                showLoading();
+                
+                // Prepare template parameters
+                const templateParams = {
+                    from_name: document.getElementById('name').value.trim(),
+                    from_phone: document.getElementById('phone').value.trim(),
+                    from_address: document.getElementById('address').value.trim(),
+                    hair_type: document.getElementById('hair-type').value || 'No especificado',
+                    message: document.getElementById('message').value.trim() || 'Sin mensaje adicional',
+                    to_name: 'De Valee',
+                    reply_to: 'agenda.valee@gmail.com'
+                };
+                
+                console.log('📤 Enviando datos:', templateParams);
+                
+                // Send email via EmailJS with your credentials
+                emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, templateParams)
+                    .then(function(response) {
+                        console.log('✅ SUCCESS!', response.status, response.text);
+                        showSuccess();
+                        form.reset();
+                        
+                        // Store WhatsApp link for modal use
+                        const whatsappMessage = createWhatsAppMessage(templateParams);
+                        const whatsappURL = `https://wa.me/573127600023?text=${encodeURIComponent(whatsappMessage)}`;
+                        window.whatsappBookingLink = whatsappURL;
+                        
+                    })
+                    .catch(function(error) {
+                        console.log('❌ FAILED...', error);
+                        
+                        let errorMessage = 'Hubo un error al enviar tu solicitud. ';
+                        
+                        // Specific error messages
+                        switch(error.status) {
+                            case 400:
+                                errorMessage += 'Por favor, verifica que todos los campos estén correctos.';
+                                break;
+                            case 401:
+                                errorMessage += 'Error de configuración del servicio.';
+                                break;
+                            case 403:
+                                errorMessage += 'Error de permisos del servicio.';
+                                break;
+                            case 404:
+                                errorMessage += 'Servicio temporalmente no disponible.';
+                                break;
+                            default:
+                                errorMessage += 'Por favor, intenta nuevamente o contáctanos por WhatsApp.';
+                        }
+                        
+                        showError(errorMessage);
+                    })
+                    .finally(function() {
+                        hideLoading();
+                    });
+            }
+            
+            // Initialize the form system
+            function initializeFormSystem() {
+                // Get form elements
+                form = document.getElementById('booking-form');
+                submitBtn = document.getElementById('submit-btn');
+                btnText = document.getElementById('btn-text');
+                formMessage = document.getElementById('form-message');
+                
+                if (!form || !submitBtn || !btnText || !formMessage) {
+                    console.error('❌ No se encontraron elementos del formulario');
+                    return;
+                }
+                
+                // Initialize EmailJS
+                if (initializeEmailJS()) {
+                    // Add event listener to form
+                    form.addEventListener('submit', handleFormSubmit);
+                    console.log('🎯 Sistema de formulario inicializado correctamente');
+                } else {
+                    console.error('❌ No se pudo inicializar EmailJS');
+                }
+            }
+            
+            // Wait for page load and EmailJS to be ready
+            window.addEventListener('load', function() {
+                setTimeout(initializeFormSystem, 1500); // Wait 1.5 seconds for EmailJS to load
+            });
+            
         })();
 
         // Testimonial Carousel
