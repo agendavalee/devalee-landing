@@ -2312,7 +2312,16 @@ Quiero reservar mi cita VIP para el alisado brasileño orgánico.
         // EmailJS Configuration and Form Handling
         (function() {
             // Initialize EmailJS with your actual credentials
+            window.addEventListener('load', function() {
+    setTimeout(() => {
+        if (typeof emailjs !== 'undefined') {
             emailjs.init("FSGiWzvR5EUYIbYgU");
+            console.log('✅ EmailJS inicializado correctamente');
+        } else {
+            console.error('❌ EmailJS no se cargó - verificar CDN');
+        }
+    }, 1000);
+});
             
             const form = document.getElementById('booking-form');
             const submitBtn = document.getElementById('submit-btn');
