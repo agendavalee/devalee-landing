@@ -1772,62 +1772,7 @@
             });
         });
 
-        // Form submission handling
-        document.getElementById('booking-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(this);
-            const name = formData.get('name');
-            const phone = formData.get('phone');
-            const address = formData.get('address');
-            const hairType = formData.get('hair-type');
-            const message = formData.get('message');
-            
-            // Basic validation
-            if (!name || !phone || !address) {
-                alert('Por favor, completá todos los campos obligatorios.');
-                return;
-            }
-            
-            // Phone validation (basic)
-            const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
-            if (!phoneRegex.test(phone)) {
-                alert('Por favor, ingresá un número de teléfono válido.');
-                return;
-            }
-            
-            // Simulate form submission success
-            // In a real implementation, you would send this data to your server
-            console.log('Form submitted:', {
-                name, phone, address, hairType, message
-            });
-            
-            // Show success modal
-            document.getElementById('success-modal').style.display = 'block';
-            
-            // Reset form
-            this.reset();
-            
-            // Optional: Send data to email or WhatsApp
-            const whatsappMessage = `¡Hola De Valee! 🌟
-
-Quiero reservar mi cita VIP para el alisado brasileño orgánico.
-
-👤 *Nombre:* ${name}
-📱 *WhatsApp:* ${phone}
-📍 *Dirección:* ${address}
-💇‍♀️ *Tipo de cabello:* ${hairType || 'No especificado'}
-💬 *Mensaje adicional:* ${message || 'Ninguno'}
-
-¡Espero su contacto para coordinar la cita! ✨`;
-            
-            // Create WhatsApp link (optional fallback)
-            const whatsappLink = `https://wa.me/573127600023?text=${encodeURIComponent(whatsappMessage)}`;
-            
-            // Store the WhatsApp link for later use
-            window.whatsappBookingLink = whatsappLink;
-        });
+        
 
        // Modal handling
         const modal = document.getElementById('success-modal');
